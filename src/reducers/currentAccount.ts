@@ -1,5 +1,6 @@
 import {User} from "firebase";
 import {action, payload, union} from "ts-action";
+import {MPAAction} from "./index";
 
 export const Login = action('currentAccount/Login', payload<User>());
 export const Logout = action('currentAccount/Logout');
@@ -19,7 +20,7 @@ const INITIAL_STATE: CurrentAccountState = {
     user: undefined
 };
 
-export function reducer(state: CurrentAccountState = INITIAL_STATE, action: CurrentAccountAction) {
+export function reducer(state: CurrentAccountState = INITIAL_STATE, action: MPAAction) {
     switch(action.type) {
         case Login.type:
             return {

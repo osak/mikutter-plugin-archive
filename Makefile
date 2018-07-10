@@ -13,3 +13,6 @@ dist/index.html:
 
 clean:
 	rm -r dist
+
+watch:
+	npx webpack --config webpack.dev.js --watch

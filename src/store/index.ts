@@ -1,6 +1,7 @@
 import {applyMiddleware, combineReducers, createStore} from "redux";
 import { createLogger } from 'redux-logger';
-import {reducers} from "../reducers";
+import {MPAAction, MPAState, reducers} from "../reducers";
+import thunk from "redux-thunk";
 
 const logger = createLogger({});
-export const store = createStore(combineReducers(reducers), applyMiddleware(logger));
+export const store = createStore(combineReducers<MPAState, MPAAction>(reducers), applyMiddleware(logger, thunk));

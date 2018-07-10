@@ -2,6 +2,7 @@ import UniversalRouter, {Route} from 'universal-router';
 import {IndexPage} from "./containers/pages/index/IndexPage";
 import {Action, Location} from "history";
 import ReactDOM from 'react-dom';
+import {ListPage} from "./containers/pages/list/ListPage";
 import {UploadPage} from "./containers/pages/upload/UploadPage";
 import React from 'react';
 import {history} from './history';
@@ -18,7 +19,11 @@ const routes: Route[] = [
     {
         path: '/upload',
         action: () => <UploadPage/>
-    }
+    },
+    {
+        path: '/search',
+        action: () => <ListPage/>
+    },
 ];
 
 const router = new UniversalRouter(routes);

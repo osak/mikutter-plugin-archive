@@ -24,6 +24,7 @@ export const Navbar = connect((state: any) => ({
                     <Grid item container>
                         <Grid item><Link href="/" className="navbar-link" styles={{ text: 'title' }}>MPA</Link></Grid>
                         <Grid item><Link href="/upload" className="navbar-link" styles={{ text: 'body1' }}>Upload</Link></Grid>
+                        <Grid item><Link href="/search" className="navbar-link" styles={{ text: 'body1'}}>Plugins</Link></Grid>
                     </Grid>
                     <Grid item container justify="flex-end" alignItems="center">
                         {currentUser ? currentUser.displayName :

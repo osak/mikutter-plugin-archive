@@ -18,6 +18,9 @@ function initFirebase() {
         messagingSenderId: "1045335220920",
     };
     firebase.initializeApp(config);
+    firebase.firestore().settings({
+        timestampsInSnapshots: true
+    });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
