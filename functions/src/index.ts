@@ -22,3 +22,5 @@ export const parsePlugin = functions.storage.object().onFinalize(async (obj, con
     console.log(obj.name, name);
     await admin.firestore().collection('plugins').doc(name).create(plugin);
 });
+
+export { rest as api } from './rest';

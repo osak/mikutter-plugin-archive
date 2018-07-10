@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "lib": ["es6", "es2015", "DOM", "ScriptHost"],
+    "allowSyntheticDefaultImports": true,
     "module": "commonjs",
     "noImplicitReturns": true,
     "outDir": "lib",
