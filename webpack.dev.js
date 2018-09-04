@@ -1,8 +1,5 @@
-const webpack = require('webpack')
-const path = require('path')
-
-
-
+const webpack = require('webpack');
+const path = require('path');
 
 /*
  * SplitChunksPlugin is enabled by default and replaced
@@ -27,8 +24,11 @@ const path = require('path')
 
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 
-
-
+const stagingLevel = process.env.NODE_ENV === 'production' ? 'production' : 'development';
+const API_BASE_URL = {
+    production: 'https://mpa.firebaseapp.com/api',
+    development: 'http://localhost:5001/mikutter-plugin-archive/us-central1/api'
+};
 
 module.exports = {
   module: {
@@ -41,7 +41,12 @@ module.exports = {
         extensions: ['.ts', '.tsx', '.js', '.jsx'],
     },
 
-  plugins: [new UglifyJSPlugin()],
+  plugins: [
+      new UglifyJSPlugin(),
+      new webpack.DefinePlugin({
+          'API_BASE': JSON.stringify(API_BASE_URL[stagingLevel])
+      })
+  ],
   entry: './src/index.tsx',
 
   output: {
@@ -66,4 +71,4 @@ module.exports = {
       }
     }
   }
-}
+};
