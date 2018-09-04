@@ -1,0 +1,10 @@
+.plugin-overview {
+    padding: 0.5rem;
+    width: 30rem;
+
+
+}
+
+.plugin-overview .version {
+    margin-left: 3em;
+}
