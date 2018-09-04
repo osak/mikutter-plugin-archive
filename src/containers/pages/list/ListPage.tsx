@@ -2,34 +2,39 @@ import Grid from "@material-ui/core/Grid";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import React from "react";
-import {connect} from "react-redux";
-import {ThunkDispatch} from "redux-thunk";
 import {PluginOverview} from "../../../components/molecules/PluginOverview";
 import {Plugin} from "../../../models/plugin";
-import {MPAState} from "../../../reducers";
-import {ListPageAction, loadPlugins} from "./state";
+import {TextField} from "@material-ui/core";
+import {observer} from 'mobx-react';
+import {action, observable} from "mobx";
+import * as firebase from "firebase";
 
-interface Props {
-    plugins: Plugin[];
-    dispatch: ThunkDispatch<MPAState, void, ListPageAction>;
-}
+@observer
+export class ListPage extends React.Component {
+    @observable private plugins: Plugin[] = [];
 
-export const ListPage = connect((state: MPAState) => ({
-    ...state.listPage
-}))(class ListPage extends React.PureComponent<Props> {
+    @action
+    private async loadPlugins() {
+        const result = await firebase.firestore().collection('plugins').limit(10).get();
+        this.plugins = result.docs.map(Plugin.parseDoc);
+    }
+
     componentDidMount() {
-        this.props.dispatch(loadPlugins());
+        this.loadPlugins();
     }
 
     render() {
         return (
-            <Grid container>
-                <List>
-                    {this.props.plugins.map((plugin, i) => <ListItem key={i}>
-                        <PluginOverview plugin={plugin}/>
-                    </ListItem>)}
-                </List>
+            <Grid container direction="column">
+                <Grid item><TextField label="Search"/></Grid>
+                <Grid item>
+                    <List>
+                        {this.plugins.map((plugin, i) => <ListItem key={i}>
+                            <PluginOverview plugin={plugin}/>
+                        </ListItem>)}
+                    </List>
+                </Grid>
             </Grid>
         );
     }
-});
+}

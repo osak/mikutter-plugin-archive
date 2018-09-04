@@ -28,7 +28,6 @@ export function loadPlugins() {
     };
 }
 
-
 export interface ListPageState {
     plugins: Plugin[];
 }
