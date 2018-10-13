@@ -7,6 +7,7 @@ import {Plugin} from "../../src/models/plugin";
 import * as jsyaml from 'js-yaml';
 import AdmZip = require("adm-zip");
 import {ObjectMetadata} from "../node_modules/firebase-functions/lib/providers/storage";
+import gcsInit = require('@google-cloud/storage');
 
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
@@ -41,13 +42,15 @@ export const parsePlugin = functions.storage.object().onFinalize(async (obj: Obj
     }
 
     const uploadedUserUid = obj.name.match(/^(.*)\//)[1];
+    const downloadLink = await generateDownloadLink(obj);
     const specContent = fs.readFileSync(specPath, 'utf8');
     const spec = jsyaml.safeLoad(specContent);
     const plugin: Plugin = {
         name: spec['name'],
         version: spec['version'],
-        url: obj.mediaLink,
+        url: downloadLink,
         author: spec['author'],
+        description: spec['description'],
         uploadedBy: {
             uid: uploadedUserUid,
             name: 'not available',
@@ -56,5 +59,18 @@ export const parsePlugin = functions.storage.object().onFinalize(async (obj: Obj
     console.log(`Spec parsed: ${JSON.stringify(plugin)}`);
     await admin.firestore().collection('plugins').doc(plugin.name).create(plugin);
 });
+
+async function generateDownloadLink(obj: ObjectMetadata): Promise<string> {
+    const gcs = gcsInit({
+        keyFilename: 'service-account-credentials.json',
+    });
+    const bucket = gcs.bucket(obj.bucket);
+    const file = bucket.file(obj.name);
+    const links = await file.getSignedUrl({
+            action: 'read',
+            expires: '01-01-2100',
+    });
+    return links[0];
+}
 
 export {rest as api} from './rest';

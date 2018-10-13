@@ -4,4 +4,4 @@ node_modules
 *.log
 dist
 functions/lib
-
+functions/service-account-credentials.json

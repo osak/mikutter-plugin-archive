@@ -6,6 +6,7 @@ export interface Plugin {
     version: string;
     url: string;
     author: string;
+    description: string;
     uploadedBy: MpaUser;
 }
 
@@ -19,6 +20,7 @@ export namespace Plugin {
             version: data.version,
             url: data.url,
             author: data.author,
+            description: data.description,
             uploadedBy: data.uploadedBy,
         };
     }

@@ -19,8 +19,12 @@ export function PluginOverview(props: Props) {
                         <Grid item className="name"><Text style="headline">{props.plugin.name}</Text></Grid>
                         <Grid item className="version"><Text>{props.plugin.version}</Text></Grid>
                     </Grid>
+                    <Grid container direction="row">
+                        <Grid item><Text>{props.plugin.author}</Text></Grid>
+                    </Grid>
                 </Grid>
-                <Grid item>URL: {props.plugin.url}</Grid>
+                <Grid item className="description"><Text>{props.plugin.description}</Text></Grid>
+                <Grid item><a href={props.plugin.url}>Download</a></Grid>
             </Grid>
         </Paper>
     );

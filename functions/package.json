@@ -11,6 +11,7 @@
   },
   "main": "lib/functions/src/index.js",
   "dependencies": {
+    "@google-cloud/storage": "^1.7.0",
     "@types/adm-zip": "^0.4.31",
     "@types/js-yaml": "^3.11.2",
     "@types/tmp": "0.0.33",
