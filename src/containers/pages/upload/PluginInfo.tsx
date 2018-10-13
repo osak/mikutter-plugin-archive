@@ -31,6 +31,8 @@ export const PluginInfo = connect((state: MPAState) => ({
             <Grid item>Name: {props.plugin.name}</Grid>
             <Grid item>Version: {props.plugin.version}</Grid>
             <Grid item>URL: {props.plugin.url}</Grid>
+            <Grid item>Author: {props.plugin.author}</Grid>
+            <Grid item>Uploaded by: {props.plugin.uploadedBy.uid}</Grid>
         </Grid>
     );
 });

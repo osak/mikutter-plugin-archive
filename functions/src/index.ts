@@ -1,4 +1,3 @@
-import {spawn} from "child_process";
 import * as functions from 'firebase-functions';
 import * as admin from "firebase-admin";
 import * as fs from "fs";
@@ -7,6 +6,7 @@ import * as tmp from 'tmp';
 import {Plugin} from "../../src/models/plugin";
 import * as jsyaml from 'js-yaml';
 import AdmZip = require("adm-zip");
+import {ObjectMetadata} from "../node_modules/firebase-functions/lib/providers/storage";
 
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
@@ -17,7 +17,7 @@ import AdmZip = require("adm-zip");
 
 admin.initializeApp();
 
-export const parsePlugin = functions.storage.object().onFinalize(async (obj, context) => {
+export const parsePlugin = functions.storage.object().onFinalize(async (obj: ObjectMetadata, context) => {
     const tmpPath = tmp.dirSync().name;
     console.log(`Create tmpdir ${tmpPath}`);
 
@@ -40,12 +40,18 @@ export const parsePlugin = functions.storage.object().onFinalize(async (obj, con
         return;
     }
 
+    const uploadedUserUid = obj.name.match(/^(.*)\//)[1];
     const specContent = fs.readFileSync(specPath, 'utf8');
     const spec = jsyaml.safeLoad(specContent);
     const plugin: Plugin = {
         name: spec['name'],
         version: spec['version'],
-        url: 'tbd'
+        url: obj.mediaLink,
+        author: spec['author'],
+        uploadedBy: {
+            uid: uploadedUserUid,
+            name: 'not available',
+        }
     };
     console.log(`Spec parsed: ${JSON.stringify(plugin)}`);
     await admin.firestore().collection('plugins').doc(plugin.name).create(plugin);

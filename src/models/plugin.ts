@@ -1,9 +1,12 @@
 import firebase from "firebase";
+import {MpaUser} from "./mpaUser";
 
 export interface Plugin {
     name: string;
     version: string;
     url: string;
+    author: string;
+    uploadedBy: MpaUser;
 }
 
 export namespace Plugin {
@@ -15,6 +18,8 @@ export namespace Plugin {
             name: data.name,
             version: data.version,
             url: data.url,
+            author: data.author,
+            uploadedBy: data.uploadedBy,
         };
     }
 }
