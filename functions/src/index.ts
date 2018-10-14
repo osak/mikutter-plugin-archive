@@ -8,6 +8,7 @@ import * as jsyaml from 'js-yaml';
 import AdmZip = require("adm-zip");
 import {ObjectMetadata} from "../node_modules/firebase-functions/lib/providers/storage";
 import gcsInit = require('@google-cloud/storage');
+import * as semver from 'semver';
 
 // // Start writing Firebase Functions
 // // https://firebase.google.com/docs/functions/typescript
@@ -33,7 +34,7 @@ export const parsePlugin = functions.storage.object().onFinalize(async (obj: Obj
     zipFile.extractAllTo(tmpPath);
     console.log(`Unzip ${fileName}`);
 
-    const pluginDir = fs.readdirSync(tmpPath).find((name) => name != 'a.zip');
+    const pluginDir = fs.readdirSync(tmpPath).find((name) => name !== 'a.zip');
     const specPath = path.join(tmpPath, pluginDir, '.mikutter.yml');
     if (!fs.existsSync(specPath)) {
         console.error(`${obj.name} is not a mikutter plugin. Delete.`);
@@ -58,7 +59,20 @@ export const parsePlugin = functions.storage.object().onFinalize(async (obj: Obj
         }
     };
     console.log(`Spec parsed: ${JSON.stringify(plugin)}`);
-    await admin.firestore().collection('plugins').doc(plugin.slug).create(plugin);
+
+    const currentPlugin = await findPlugin(plugin.slug);
+    if (currentPlugin) {
+        if (currentPlugin.uploadedBy.uid !== plugin.uploadedBy.uid) {
+            console.error(`Plugin ${plugin.slug} is originally uploaded by ${currentPlugin.uploadedBy.uid}, but new version is by ${plugin.uploadedBy.uid}. Abort processing.`);
+            return;
+        }
+        if (semver.lte(semver.coerce(plugin.version), semver.coerce(currentPlugin.version))) {
+            console.error(`Version string of newly uploaded plugin ${plugin.slug} (${plugin.version}) is not newer than old one (${currentPlugin.version}). Abort processing.`);
+            return;
+        }
+    }
+
+    await admin.firestore().collection('plugins').doc(plugin.slug).set(plugin);
 });
 
 async function generateDownloadLink(obj: ObjectMetadata): Promise<string> {
@@ -72,6 +86,14 @@ async function generateDownloadLink(obj: ObjectMetadata): Promise<string> {
             expires: '01-01-2100',
     });
     return links[0];
+}
+
+async function findPlugin(slug: string): Promise<Plugin | undefined> {
+    const snapshot: FirebaseFirestore.DocumentSnapshot = await admin.firestore().collection('plugins').doc(slug).get();
+    if (snapshot.exists) {
+        return (snapshot.data() as Plugin);
+    }
+    return undefined;
 }
 
 export {rest as api} from './rest';
