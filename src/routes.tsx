@@ -6,6 +6,7 @@ import {ListPage} from "./containers/pages/list/ListPage";
 import {UploadPage} from "./containers/pages/upload/UploadPage";
 import React from 'react';
 import {history} from './history';
+import {PluginPage} from "./containers/pages/plugin/PluginPage";
 
 export interface RootComponentProps {
     children: any;
@@ -24,6 +25,10 @@ const routes: Route[] = [
         path: '/search',
         action: () => <ListPage/>
     },
+    {
+        path: '/plugin/:slug',
+        action: (context) => <PluginPage slug={context.params.slug}/>
+    }
 ];
 
 const router = new UniversalRouter(routes);
