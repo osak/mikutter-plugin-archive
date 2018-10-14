@@ -46,6 +46,7 @@ export const parsePlugin = functions.storage.object().onFinalize(async (obj: Obj
     const specContent = fs.readFileSync(specPath, 'utf8');
     const spec = jsyaml.safeLoad(specContent);
     const plugin: Plugin = {
+        slug: spec['slug'],
         name: spec['name'],
         version: spec['version'],
         url: downloadLink,
@@ -57,7 +58,7 @@ export const parsePlugin = functions.storage.object().onFinalize(async (obj: Obj
         }
     };
     console.log(`Spec parsed: ${JSON.stringify(plugin)}`);
-    await admin.firestore().collection('plugins').doc(plugin.name).create(plugin);
+    await admin.firestore().collection('plugins').doc(plugin.slug).create(plugin);
 });
 
 async function generateDownloadLink(obj: ObjectMetadata): Promise<string> {
